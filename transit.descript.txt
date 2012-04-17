@@ -1,0 +1,4 @@
+if 'transition' (smooth CSS3 transformations) don't work -- use this instead
+
+if (!$.support.transition)
+    $.fn.transition = $.fn.animate;
