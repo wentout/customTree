@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf=8">
+
+<title> Tree Test </title>
+<link rel = "stylesheet" type = "text/css" href = "./style.css">
+<script language = "JavaScript" type = "text/javascript" src = "./jquery-1.7.2.js"></script>
+<script language = "JavaScript" type = "text/javascript" src = "./jquery.tmpl.js"></script>
+<script language = "JavaScript" type = "text/javascript" src = "./jquery.cookie.js"></script>
+<script language = "JavaScript" type = "text/javascript" src = "./treeControl.js"></script>
+<!--
+//-->
+
+<body>
+<h1>Tree View Example</h1>
+
+<div style = "position: absolute; display: block; max-height: 550px; height: 550px; overflow: auto; border-top: 1px solid black; border-bottom: 1px solid black;">
+	<table border = "0" >
+	<tr valign = "top">
+		<td>
+			<div id = "tree_content" style = "position: relative; display: block; overflow: auto">
+			</div>
+		</td>
+		<td>
+			<textarea id = "debug" cols = "50" rows = "30"></textarea >
+		</td>
+	</tr></table>
+</div>
+
+<script language = "JavaScript" type = "text/javascript">
+
+$(function(){
+try{
+
+	var count = 0;
+	var info = function(str){
+		count++
+		if(str !== undefined){ $('#debug').val( $('#debug').val() + count + '. ' + str + '\n' ); }
+		else{ count = 0; $('#debug').html(''); }
+		$('#debug')[0].scrollTop = $('#debug')[0].scrollHeight;
+	};
+	info();
+
+	
+	$('#tree_content').treeControl( {
+		  saveState : true
+		, info		: info
+		, root		: 'top'
+		, control	: { text : ['[ + ]', '[ &ndash; ]'], cls : 'open' }
+		, handlers	: {
+			  select	: function( leaf ){
+				info('Tree leaf selected.');
+			}
+			, blur		: function( currentLeaf , result ){
+				result();
+				info('Tree leaf blurs.')
+				return true;
+			}
+			, control	: function( leaf ){
+				try{
+					info( 'Control Event Fired on ' + leaf.obj.name + ', leaf received open status ' + leaf.obj.open + '.' );
+				}catch(e){ alert(e); }
+			}
+		}
+		, ws		: function( val , cb ) {
+			try{
+				var val = ( typeof( val ) == 'string' ) ? { 'leaf' : val , action : 'get' } : ( ( typeof( val ) == 'object' ) ? val : false );
+				if( val ){
+					$.ajax( {
+						  type: "POST"
+						, async: true
+						, data : val
+						, dataType : 'text'
+						, url: './tree.php'
+						, success: function( data ){ if( data !== ''){ cb( data ); } }
+						, error: function(data){ alert(data); }
+					} ) ;
+				}
+			}catch(e){ alert(e); }
+		}
+		, init		: [ 1000 ,  function( treeControl ){ }  ]  // here is ability to set 'delay' and 'calback' to init
+	} ); //.hide().fadeIn( 1000 );
+		
+
+}catch(e){ alert(e); }
+});
+</script>
+</body>
+</html>
