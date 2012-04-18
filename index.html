@@ -5,10 +5,9 @@
 
 <title> Tree Test </title>
 <link rel = "stylesheet" type = "text/css" href = "./style.css">
-<script language = "JavaScript" type = "text/javascript" src = "./jquery-1.7.2.js"></script>
-<script language = "JavaScript" type = "text/javascript" src = "./jquery.tmpl.js"></script>
-<script language = "JavaScript" type = "text/javascript" src = "./jquery.cookie.js"></script>
-<script language = "JavaScript" type = "text/javascript" src = "./treeControl.js"></script>
+<script language = "JavaScript" type = "text/javascript" src = "jquery-1.7.2.js"></script>
+<script language = "JavaScript" type = "text/javascript" src = "jquery.tmpl.js"></script>
+<script language = "JavaScript" type = "text/javascript" src = "treeControl.js"></script>
 <!--
 //-->
 
@@ -41,7 +40,6 @@ try{
 		$('#debug')[0].scrollTop = $('#debug')[0].scrollHeight;
 	};
 	info();
-
 	
 	$('#tree_content').treeControl( {
 		  saveState : true
@@ -64,18 +62,35 @@ try{
 		}
 		, ws		: function( val , cb ) {
 			try{
-				var val = ( typeof( val ) == 'string' ) ? { 'leaf' : val , action : 'get' } : ( ( typeof( val ) == 'object' ) ? val : false );
-				if( val ){
-					$.ajax( {
-						  type: "POST"
-						, async: true
-						, data : val
-						, dataType : 'text'
-						, url: './tree.php'
-						, success: function( data ){ if( data !== ''){ cb( data ); } }
-						, error: function(data){ alert(data); }
-					} ) ;
+				var fnCb = ( function( cb ){
+					return function( data ){
+						window.setTimeout( function(){ cb( data ); }, 1000 );
+					};
+				} )( cb );
+				if( val == '/top' ){
+					fnCb( '[{"name":"Parent1","folder":true}, {"name":"Parent2"}, {"name":"Parent3","folder":true,"open":true}, {"name":"Parent4"}, {"name":"Parent5"}]' );
 				}
+
+				if( val == '/top/Parent1' ){
+					fnCb( '[{"name":"Child1"}, {"name":"Child2"}, {"name":"Child3","folder":true}]' );
+				}
+
+				if( val == '/top/Parent3' ){
+					fnCb( '[{"name":"p3Child1"}, {"name":"p3Child2"}, {"name":"p3Child3","folder":true,"open":true}, {"name":"p3Child4"}, {"name":"p3Child5","folder":true,"open":true}]' );
+				}
+
+				if( val == '/top/Parent3/p3Child3' ){
+					fnCb( '[{"name":"p3c3NChild1"}, {"name":"p3c3NChild2"}, {"name":"p3c3NChild3"}, {"name":"p3c3NChild4"}, {"name":"p3c3NChild5"}, {"name":"p3c3NChild6"}, {"name":"p3c3NChild7"}, {"name":"p3c3NChild8"}, {"name":"p3c3NChild9"}, {"name":"p3c3NChild10"}, {"name":"p3c3NChild11"}]' );
+				}
+
+				if( val == '/top/Parent3/p3Child5' ){
+					fnCb( '[{"name":"p3c5NChild1"}, {"name":"p3c5NChild2"}]' );
+				}
+
+				if( val == '/top/Parent1/Child3' ){
+					fnCb( '[{"name":"NChild1"}, {"name":"NChild2"}, {"name":"NChild3"}, {"name":"NChild4"}, {"name":"NChild5"}, {"name":"NChild6"}, {"name":"NChild7"}, {"name":"NChild8"}, {"name":"NChild9"}, {"name":"NChild10"}, {"name":"NChild11"}, {"name":"NChild12"}, {"name":"NChild13"}, {"name":"NChild14"}, {"name":"NChild15"}]' );
+				}
+				
 			}catch(e){ alert(e); }
 		}
 		, init		: [ 1000 ,  function( treeControl ){ }  ]  // here is ability to set 'delay' and 'calback' to init
