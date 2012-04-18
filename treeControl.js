@@ -53,20 +53,21 @@ jQuery.fn.extend( {
 					try{
 						evt.stopPropagation();
 						var result2 = function(){
-							var elem = evt.data.leaf;
-							x.current = elem;
-							$( x.current.elem.heading ).addClass( x.classes.selected );
-							try{ ( x.callbacks && x.callbacks.click) && x.callbacks.click ( elem ); }catch(e){ alert(e); }
-							x.handlers.select && x.handlers.select( elem );
+							try{
+								var elem = evt.data.leaf;
+								x.current = elem;
+								$( x.current.elem.heading ).addClass( x.classes.selected );
+								try{ ( x.callbacks && x.callbacks.click) && x.callbacks.click ( elem ); }catch(e){ alert(e); }
+								x.handlers.select && x.handlers.select( elem );
+							}catch(e){ alert(e); }
 						}
 						if( x.current ){
 							var result = function(){
 									$( x.current.elem.heading ).removeClass( x.classes.selected );
+									result2(); 
 							}
 							if( x.handlers.blur ) {
-								if(  x.handlers.blur( x.current , result ) ){
-									result2(); 
-								}
+								x.handlers.blur( x.current , result ) ;
 							}else{ result(); }
 						}else{ result2(); }
 					}catch(e){ alert(e); }

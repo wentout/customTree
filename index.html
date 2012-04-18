@@ -50,12 +50,11 @@ try{
 		, control	: { text : ['[ + ]', '[ &ndash; ]'], cls : 'open' }
 		, handlers	: {
 			  select	: function( leaf ){
-				info('Tree leaf selected.');
+				info('Tree leaf selected : ' + leaf.obj.name );
 			}
 			, blur		: function( currentLeaf , result ){
+				info('Tree leaf blurs : ' + currentLeaf.obj.name );
 				result();
-				info('Tree leaf blurs.')
-				return true;
 			}
 			, control	: function( leaf ){
 				try{
