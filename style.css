@@ -44,3 +44,6 @@ ul.custom-tree-root li span.hover, ul.custom-tree-root li span.selected.hover{
 	background-image: url("loader-circle.gif");
     background-repeat: no-repeat;
 }
+.docu li{
+	margin: 5px 0px 20px 0px;
+}

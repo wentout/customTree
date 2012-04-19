@@ -45,10 +45,306 @@
         <p>Greatly customisable AJAX Custom Tree View
 		<br><br>
 		Required: <br>
-		* jquery <br>
-		* jquery.tmpl() <br>
-		* jquery.cookie() -- optional, if you wish to save tree state (open\close leafs)</p>
+		* jquery &mdash; tree based on it, strongly required<br>
+		* jquery.tmpl() &mdash; for leafs generating, strongly required<br>
+		* jquery.cookie() &mdash; [optional], if you wish to save tree state (open\close leafs)</p>
+		<ul>
+			<li><a href = "#how_to_install"> Installation </a></li>
+			<li><a href = "#how_to_control"> Usage of Control Object and Leafs </a></li>
+			<li><a href = "#how_to_example"> Example </a></li>
+			
+			
+		</ul>
       </section>
+
+      <section class="inner">
+        <strong>Docu:</strong>
+		<h3 id = "how_to_install">Installation</h3>
+		<p>To setup on page put " <strong>$('#tree_content_div').treeControl( x );</strong> " in Your sctipts. <br>
+		Where <strong>x</strong> is following {} object:
+		</p>
+		<ul class = 'docu'>
+			<li><strong>x.root</strong> &ndash; name of tree root request, default is 'top'. </li>
+			<li><strong>x.name</strong> &ndash; callback function that receives leaf data and returns leaf name </li>
+			<li><strong>x.theme</strong> &ndash; tree className, <strong>default</strong> is <strong>'custom'</strong>, and then used className becomes <strong>'custom-tree-root'</strong>. If, for example, You will choose name <strong>'MyGreatTreeTheme'</strong> it will be transformed to <strong>'MyGreatTreeTheme-tree-root'</strong></li>
+			<li><strong>x.info</strong> &ndash; callback function that receives notifications about AJAX </li>
+			<li><strong>x.animate</strong> &ndash; speed of animation for tree sliding and . </li>
+			<li><strong>x.preloader</strong><br/>
+				'0' &ndash; not to set preloader className to 'MyGreatTreeTheme-tree-root' DOM Object at all<br/>
+				'1' &ndash; set preloader className to 'MyGreatTreeTheme-tree-root' DOM Object only when x.root request occures<br/>
+				'2' &ndash; always set preloader className to 'MyGreatTreeTheme-tree-root' DOM Object<br/>
+			</li>
+			<li><strong>x.classes : {}</strong><br/>
+				<ul>
+				<li>'<strong>treeLeaf</strong>' &ndash; className for each UL element inside leaf, simply means for each leaf,<br> by default is '.tree-leaf'</li>
+
+				<li>'<strong>heading</strong>' &ndash; className for container where name of leaf is placed,<br> by default this will be &lg;span with className = "heading" </li>
+
+				<li>'<strong>control</strong>' &ndash; className for control  &lg;span, where [ + ] & [ - ] persists,<br>by default is '.control'</li>
+
+				<li>'<strong>status</strong>' &ndash; className for control &lg;span with some status, <br>if You will use it, because i'm not using it in example. You could set something there by using x.name() function,<br>by default is '.status'</li>
+
+				<li>'<strong>loader</strong>' &ndash; className for loader which occures in leaf when AJAX data request is processing,<br>by default is '.loader'</li>
+
+				<li>'<strong>selected</strong>' &ndash; className for heading when user selects it,<br> default is '.selected'</li>
+
+				<li>'<strong>preloader</strong>' &ndash; className for $('#tree_content_div') when AJAX occures,<br>by default is '.preloader'</li>
+
+				<li>'<strong>hover</strong>' &ndash; className for heading when hover (mouse over) event occurs on it,<br>by default is '.hover' </li>
+				
+				</ul>
+			</li>
+
+			
+			<li><strong>x.control : {}</strong><br/>
+				<ul>
+				<li>'<strong>text</strong>' &ndash; text for 'control' span, by default: [ '+', '&ndash;' ]</li>
+				<li>'<strong>cls</strong>' &ndash; className for 'control' span when it is open,<br> by default is '.open'</li>
+
+				
+				</ul>
+			</li>
+			
+			
+			<li><strong>x.template</strong> &ndash; jQ.tmpl() template for leaf generation, default is: <br>
+				'&lt;li&gt;&lt;span class = "' + x.classes.heading + '"&gt;${obj.name}&lt;/span&gt;<br>&lt;ul class = "' + x.classes.treeLeaf + '"&gt;&lt;/ul&gt;&lt;/li&gt;'<br><br>
+				You should replace it with something like:<br>
+				'&lt;li&gt;&lt;span class = "Your_Heading_Class"&gt;${obj.name}&lt;/span&gt;<br>&lt;ul class = "Your_TreeLeaf_Class"&gt;&lt;/ul&gt;&lt;/li&gt;'<br>
+				if You need to make changes.
+				
+			</li>
+
+			<li><strong>x.ctrlTpl</strong> &ndash; string template (NOT $.tmpl, just string) for control span<br>
+			Default is : '&lt;span class = "' + x.classes.control + '"&gt;&lt;/span&gt;'<br>
+			Replace it anyhow, if You wish, for example: <br>
+			'&lt;span class = "Your_Favorite_Control_Class Something_else"&gt;&lt;/span&gt;&amp;nbsp;Addition'. </li>
+
+			<li><strong>x.statusTpl</strong> &ndash; same as ctrlTpl but for status &lg;span<br>
+			Default is : '&lt;span class = "' + x.classes.status + '"&gt;&lt;/span&gt;'<br>
+			Replace it anyhow, if You wish, for example: <br>
+			'&lt;span class = "Your_Favorite_Status_Class"&gt;&lt;/span&gt;&amp;nbsp;something'. </li>
+
+			<li><strong>x.handlers : {}</strong><br/>
+				<ul>
+				<li>'<strong>control</strong>' &ndash; callback when control event (open/close) fires: function( leaf ), <br>by default is set 'false' </li>
+				<li>'<strong>select</strong>' &ndash; callback when select event fires: function( leaf ), <br>by default is set 'false' </li>
+				<li>'<strong>blur</strong>' &ndash; callback when blur event fires: function( leaf , result )<br> where 'result' is callback function which must be called if it is allowed to make blur now, <br>by default is set 'false' </li>
+				<li>'<strong>leafsAdd</strong>' &ndash; callback when leafsAdd event occures: ( leaf , controlObject )<br> where 'controlObject' is our full tree control object which contents everything about our tree, and could be used here directly </li>
+				</ul>
+			</li>
+
+			<li><strong>x.callbacks : {}</strong><br/>
+				<ul>
+				<li>'<strong>click</strong>' &ndash; callback when user clicks on 'heading'</li>
+				<li>'<strong>mouseover</strong>' &ndash; callback when user mouseovers on 'heading'</li>
+				<li>'<strong>mouseout</strong>' &ndash; callback when user mouseouts from 'heading'</li>
+				</ul>
+			</li>
+
+			<li><strong>x.saveState : {}</strong> only if You use $.cookie() <br/>
+				<ul>
+				<li>'<strong>name</strong>' &ndash; name of cookie for storing tree state,<br> by default is 'tree_control_cookie_name'<br> is is usefull to set it different is You have multiplie trees on page</li>
+				<li>'<strong>opts</strong>' &ndash; used for $.cookie( name , opts ), by default is { expires: 7 } </li>
+				</ul>
+			</li>
+			
+			<li><strong>x.ws</strong> &ndash; callback function, which is used for requests about leafs: function( path , callback )<br> by default is nothing! You must specify it if You wish You tree works somehow! <br>
+			</li>
+
+			
+		</ul>
+		<br><hr><br>
+		<strong>Therefore full customised example is:</strong><br><br>
+		
+		<pre>
+$('#tree_content_div').treeControl( {
+	  root		: 'top'
+	, name		: function( obj ){ return obj.name;
+	, theme		: 'custom'
+	, info		: function( data ){ alert(data); }
+	, animate	: 1500
+	, preloader	: 2
+	, classes	: {
+		  treeLeaf	: 'tree-leaf'
+		, heading	: 'heading'
+		, control	: 'control'
+		, status	: 'status'
+		, loader	: 'loader'
+		, selected	: 'selected'
+		, preloader	: 'preloader'
+		, hover		: 'hover'
+	}
+	, control		: { text : ['+', '&ndash;'], cls : 'open' }
+	, template		: 
+		'&lt;li&gt;&lt;span class = "heading"&gt;${obj.name}&lt;/span&gt;
+			&lt;ul class = "tree-leaf"&gt;&lt;/ul&gt;&lt;/li&gt;'
+			
+	, ctrlTpl		: '&lt;span class = "control"&gt;&lt;/span&gt;'
+	, statusTpl		: '&lt;span class = "status"&gt;&lt;/span&gt;'
+
+
+	, handlers		: {
+		  control	: function( leaf ){ }
+		, select	: function( leaf ){ }
+		, blur		: function( leaf , result ){ 
+			if (something){
+				// Your Great Checking / Blocking code
+			}else{
+				result(); 
+			}
+		}
+		, leafsAdd	: function( leaf ,  controlObject ){ }
+	}
+
+	, callbacks		{
+		  click		: function( leaf ){ }
+		, mouseover	: function( leaf ){ }
+		, mouseout	: function( leaf ){ }
+	}
+	
+	, saveState		: {
+		  name	: 'tree_control_cookie_name'
+		, opts	: { expires: 150 }
+	}
+	
+	, ws			: function( val, callback ){
+
+	try{
+		var val = ( typeof( val ) == 'string' ) ? 
+			{ 'leaf' : val , action : 'get' } : 
+				( ( typeof( val ) == 'object' ) ?
+					val : false );
+		if( val ){
+			$.ajax( {
+			
+			  type: "POST"
+			, async: true
+			, data : val
+			, dataType : 'text'
+			, url: './tree.php'
+			, success: 
+			function( data ){ 
+				if( data !== ''){ callback( data ); } 
+			}
+			, error: function(data){ alert(data); }
+			
+			} ) ;
+		}
+	}catch(e){ alert(e); }
+
+	}
+	
+	
+} );
+		</pre>
+		
+		<br>
+		<hr>
+		<br>
+		
+		<h3 id = "how_to_control"> How to use ' Control Object ' and ' Leaf ' </h3>
+		
+		<strong> Leafs </strong> <br><br>
+		Each <strong>leaf</strong> object (upthere) is : <br><br>
+		<pre>
+		
+	
+{
+	name 	: 'leaf.name from JSON received through 'ws', e.g. ID'
+	obj		: {
+		  name		: ' returned by x.name( leaf ) '
+		, children	: ' array of leafs that are children of this '
+		, parent	: 'link to parent'
+		, obj		: 'JSON that comes from ws'
+		, elem		: {
+			  li		: DOM of this leaf's LI 
+			, ul		: DOM of this leaf's UL 
+					(where children are)
+			, heading	: DOM of heading span
+			, control	: DOM of control span
+			, status	: DOM of status span
+		}
+	}
+}
+	
+		
+		</pre>
+		
+		<br><br>
+		<strong> ControlObject </strong> <br><br>
+		
+		<p>
+			In Your scripts ControlObject could be received with next set: <br>
+		</p>
+		
+		<pre style = "padding: 30px 0px 0px 40px; font-weight: bold; font-size: 24px">
+var tree = $('#treePages').prop( 'tree' );
+		</pre>
+		<br>
+		<p>
+			After that You will receive controlObject in 'tree' which is : <br>
+		</p>
+		<pre>
+{
+
+  leaf		: function( leaf, callback ){ }
+	- this function make leafs, 
+		meanings is 'add my leafs'
+		
+		-- leaf is our leaf
+		-- callback -- what to do after leaf ads
+			callback == function( leaf , controlObject )
+		
+
+, shLoader	: function( leaf, true/false ){ }
+	- used for show loader, add/remove class '.loader'
+
+, getPath	: function( leaf , parent ){ }
+	- returns array of
+		[ 
+			  arr	: array of current leaf paths to 
+					'top' in 'ASC'
+					
+			, str	: same as join array by leaf.name
+			, leaf	: our leaf
+		]
+		
+		- leaf : leaf attr itself
+		- parent: true/false 
+				'include this leaf in path or not'
+
+, currentPath : same as getPath, but from
+		currently selected leaf, therefore
+		currentPath	: function( parent )
+		
+, x		: - object that initialised our control
+
+, treeViewModel : full model from first leaf
+
+, leafControl : function for manipulation with leaf.contol
+		function( leaf , addCallback )
+			leaf -- our leaf
+			
+			addCallback 
+				-- what to do if leaf ws need to be invoked
+				same as tree.leaf callback
+		
+		example usage:
+		
+		// leaf.obj.open == false
+		leaf.obj.open = true;
+		tree.leafControl( leaf , function( leaf , controlObject ){
+			// do something with leaf or controlObject
+		})
+ 
+			
+}
+		</pre>
+		
+		<br><br><br><br>
+      </section>
+	  
+
     </div>
 
 
@@ -59,8 +355,10 @@
         <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
       </footer>
     </div>
+
+
 	
-<h1>Tree View Example</h1>
+<h1 id = "how_to_example">Tree View Example</h1>
 
 <div style = "position: absolute; display: block; max-height: 550px; height: 550px; overflow: auto; border-top: 1px solid black; border-bottom: 1px solid black;">
 	<table border = "0" >
