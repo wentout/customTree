@@ -396,7 +396,9 @@ try{
 		, control	: { text : ['[ + ]', '[ &ndash; ]'], cls : 'open' }
 		, handlers	: {
 			  select	: function( leaf ){
-				info('Tree leaf selected : ' + leaf.obj.name );
+				var tree = $('#tree_content').prop( 'tree' );
+				var path = tree.currentPath( );
+				info('Tree leaf selected : ' + leaf.obj.name + ' path is : ' + path.strp );
 			}
 			, blur		: function( currentLeaf , result ){
 				info('Tree leaf blurs : ' + currentLeaf.obj.name );

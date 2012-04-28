@@ -120,13 +120,22 @@ jQuery.fn.extend( {
 						if( leaf.parent ){ construct( leaf.parent ); }
 					};
 					construct( leaf );
+
+					var arrp = arr.slice( 0 );
+					arrp.pop();
+					arrp.reverse();
+					var strp = '';
+					$.map( arrp, function(el){ strp += '/' + el.name; } );
+					strp += '/';
+
 					arr.reverse();
 					parent && arr.pop();
 					var str = '';
 					$.map( arr, function(el){ str += '/' + el.name; } );
-					return { str : str, arr : arr , leaf : parent ? ( leaf.parent ? leaf.parent : treeViewModel ) : leaf };
+
+					return { str : str, strp : strp, arr : arr , leaf : parent ? ( leaf.parent ? leaf.parent : treeViewModel ) : leaf };
 				}else{
-					return { str : '/' + treeViewModel.name , arr : [ treeViewModel ] , leaf : treeViewModel };
+					return { str : '/' + treeViewModel.name , strp : '/', arr : [ treeViewModel ] , leaf : treeViewModel };
 				}
 			}
 			var gsCook = function( leafObj , ret ) {
