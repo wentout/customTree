@@ -139,17 +139,24 @@ jQuery.fn.extend( {
 				}
 			};
 			
-			var getTree = function( leaf ){
+			var getTree = function( leaf, merge, transform_function ){
 				try{
 					var tree = {};
 					if(leaf){
 						tree.name = leaf.name;
+						tree.path = getPath(leaf, true);
+						if(typeof(merge) == 'object'){
+							$.extend(tree, merge);
+						}
+						if(typeof(transform_function) == 'function'){
+							tree = transform_function(tree);
+						}
 						if(leaf.children !== undefined){
 							var len = leaf.children.length;
 							if(len > 0){
 								tree.children = [];
 								for(var i = 0; i < len; i++){
-									tree.children.push(getTree(leaf.children[i]));
+									tree.children.push(getTree(leaf.children[i], merge, transform_function));
 								}
 							}
 						}
@@ -315,8 +322,8 @@ jQuery.fn.extend( {
 
 				, getPath		: getPath
 				, getTree		: getTree
-				, getTreeCurrent: function(){
-					return getTree(x.current);
+				, getTreeCurrent: function(merge, transform_function){
+					return getTree(x.current, merge, transform_function);
 				}
 				, currentPath	: function( parent ){
 					return getPath( x.current , parent );
