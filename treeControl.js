@@ -137,7 +137,27 @@ jQuery.fn.extend( {
 				}else{
 					return { str : '/' + treeViewModel.name , strp : '/', arr : [ treeViewModel ] , leaf : treeViewModel };
 				}
-			}
+			};
+			
+			var getTree = function( leaf ){
+				try{
+					var tree = {};
+					if(leaf){
+						tree.name = leaf.name;
+						if(leaf.children !== undefined){
+							var len = leaf.children.length;
+							if(len > 0){
+								tree.children = [];
+								for(var i = 0; i < len; i++){
+									tree.children.push(getTree(leaf.children[i]));
+								}
+							}
+						}
+					}
+					return tree;
+				}catch(e){ debugger; }
+			};
+			
 			var gsCook = function( leafObj , ret ) {
 				try{
 					if( $.cookie && x.saveState && leafObj ){
@@ -164,7 +184,7 @@ jQuery.fn.extend( {
 						$.cookie( x.saveState.name , cook.join(), x.saveState.opts );
 					}else{ if( ret ){ return false; } }
 				}catch(e){ alert(e); if( ret ){ return false; } }
-			}
+			};
 
 			var makeLeaf = function( preObj , parent ){
 				try{
@@ -180,7 +200,7 @@ jQuery.fn.extend( {
 					else{ obj.obj.open = gsCook( obj , true ); }
 					return obj;
 				}catch(e){ alert(e); return false; }
-			}
+			};
 
 			x.obj.addClass( treeRoot(true) );
 			x.obj.html( $('<ul class = "' + treeRoot( true ) + '"></ul>') );
@@ -198,7 +218,7 @@ jQuery.fn.extend( {
 				elem.status = $( elem.li ).find( 'span.' + x.classes.status );
 				elem.control = $( elem.li ).find( 'span.' + x.classes.control );
 				return elem;
-			}
+			};
 
 			var leafControl	= function( leaf , addCallback ){
 				if( leaf.obj.folder ){
@@ -222,7 +242,7 @@ jQuery.fn.extend( {
 					leaf.elem.control.removeClass( x.control.cls );
 				}
 				x.handlers.control && x.handlers.control( leaf );
-			}
+			};
 
 			var parseLeaf = function( leaf, obj, pl_callback ) { // where to add, what JSON to add,
 				try{
@@ -266,7 +286,7 @@ jQuery.fn.extend( {
 						if( x.preloader > 0){ x.obj.removeClass( x.classes.preloader ); }
 					} );
 				}catch(e){ alert(e); }
-			}
+			};
 
 			var controlObject = {
 				  leaf			: function( leaf , callback ) {
@@ -294,6 +314,10 @@ jQuery.fn.extend( {
 				}
 
 				, getPath		: getPath
+				, getTree		: getTree
+				, getTreeCurrent: function(){
+					return getTree(x.current);
+				}
 				, currentPath	: function( parent ){
 					return getPath( x.current , parent );
 				}
